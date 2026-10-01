@@ -23,6 +23,20 @@ def _file_exists(base, rel_url):
 
 
 def sync_salon_photos(app):
+    """Запускается в контексте приложения.
+    Сканирует static/uploads/salons/<id>/, сверяет с БД, добавляет/удаляет записи,
+    обновляет salon.photo_url."""
+    from sqlalchemy import inspect
+
+    try:
+        inspector = inspect(db.engine)
+        if "salons" not in inspector.get_table_names():
+            print("[SYNC] таблиц ещё нет — пропускаю")
+            return
+    except Exception as e:
+        print(f"[SYNC] не могу проверить таблицы: {e}")
+        return
+
     base = app.config["UPLOAD_FOLDER"]
     if not os.path.isdir(base):
         os.makedirs(base, exist_ok=True)
@@ -60,8 +74,8 @@ def sync_salon_photos(app):
         rel_on_disk = [f"{salon_id}/{fname}" for fname in files_on_disk]
 
         # Записи в БД
-        db_photos = SalonPhoto.query.filter_by(salon_id=salon_id)\
-                                    .order_by(SalonPhoto.position).all()
+        db_photos = SalonPhoto.query.filter_by(salon_id=salon_id) \
+            .order_by(SalonPhoto.position).all()
         db_urls = {p.url: p for p in db_photos}
 
         # 1. Удаляем из БД то, чего нет на диске (только локальные)
@@ -85,15 +99,13 @@ def sync_salon_photos(app):
 
         db.session.flush()
 
-        # 3. Обложка: проверяем существование файла
+        # 3. Обложка
         if salon.photo_url:
-            # Локальный файл, но его нет на диске → сброс
             if not salon.photo_url.startswith(("http://", "https://")):
                 if not _file_exists(base, salon.photo_url):
                     salon.photo_url = None
                     cleared_covers += 1
 
-        # Если обложки нет — берём первое фото из папки
         if not salon.photo_url:
             first = (SalonPhoto.query.filter_by(salon_id=salon_id)
                      .order_by(SalonPhoto.position).first())
@@ -104,6 +116,39 @@ def sync_salon_photos(app):
 
     print(f"[SYNC] фото: добавлено {added_total}, удалено {removed_total}, "
           f"обнулено обложек {cleared_covers}")
+
+
+def sync_all_cover_covers(app):
+    """Проверяет обложки ВСЕХ салонов, не только тех, у кого есть папки.
+    Обнуляет битые обложки и подставляет первое доступное фото."""
+    from sqlalchemy import inspect
+
+    try:
+        inspector = inspect(db.engine)
+        if "salons" not in inspector.get_table_names():
+            return
+    except Exception:
+        return
+
+    base = app.config["UPLOAD_FOLDER"]
+    cleared = 0
+
+    for salon in Salon.query.all():
+        if not salon.photo_url:
+            continue
+        if salon.photo_url.startswith(("http://", "https://")):
+            continue
+        if not _file_exists(base, salon.photo_url):
+            salon.photo_url = None
+            cleared += 1
+            first = (SalonPhoto.query.filter_by(salon_id=salon.id)
+                     .order_by(SalonPhoto.position).first())
+            if first and _file_exists(base, first.url):
+                salon.photo_url = first.url
+
+    if cleared:
+        db.session.commit()
+        print(f"[SYNC] обнулено битых обложек: {cleared}")
 
 
 def sync_all_cover_covers(app):
