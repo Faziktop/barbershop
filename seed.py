@@ -102,14 +102,11 @@ with app.app_context():
     force = "--force" in sys.argv
     if force:
         print("[seed] --force: пересоздаю БД")
+        # Удаляем все таблицы, но НЕ трогаем alembic_version
+        db.reflect()
         db.drop_all()
-        # Применяем миграции, чтобы схема соответствовала моделям
-        from flask_migrate import upgrade as migrate_upgrade
-        try:
-            migrate_upgrade()
-        except Exception:
-            # Если миграций нет — просто создаём схему
-            db.create_all()
+        # Создаём схему заново через модели
+        db.create_all()
     else:
         # Не форсим — но убедимся, что схема есть
         db.create_all()
