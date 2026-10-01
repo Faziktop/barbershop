@@ -1,0 +1,36 @@
+# /etc/systemd/system/barbershop.service
+#
+# Установка:
+#   sudo cp deploy/barbershop.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable barbershop
+#   sudo systemctl start barbershop
+#   sudo systemctl status barbershop
+
+[Unit]
+Description=Vibe barbershop Flask app
+After=network.target
+
+[Service]
+Type=notify
+User=vibe
+Group=vibe
+WorkingDirectory=/home/vibe/barbershop
+EnvironmentFile=/home/vibe/barbershop/.env
+ExecStart=/home/vibe/barbershop/.venv/bin/gunicorn -c /home/vibe/barbershop/gunicorn.conf.py wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+RestartSec=5
+
+# Ограничения безопасности
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=false
+ReadWritePaths=/home/vibe/barbershop
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

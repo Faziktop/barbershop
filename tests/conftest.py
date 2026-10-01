@@ -1,13 +1,10 @@
 """
 Фикстуры для тестов.
-
-Создаём изолированную БД в памяти, тестового клиента Flask
-и несколько пользователей с разными ролями.
+Изолированная БД в памяти, тестовые клиенты и пользователи разных ролей.
 """
 import os
 import pytest
 
-# Переопределяем окружение до импорта приложения
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-pytest-only")
 
 from app import create_app, db as _db
@@ -19,13 +16,12 @@ from app.models import (
 
 @pytest.fixture(scope="session")
 def app():
-    """Создаём приложение с БД в памяти."""
     app = create_app()
     app.config.update({
         "TESTING": True,
-        "WTF_CSRF_ENABLED": False,      # для тестов CSRF отключаем
+        "WTF_CSRF_ENABLED": False,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "RATELIMIT_ENABLED": False,     # чтобы rate limit не мешал
+        "RATELIMIT_ENABLED": False,
     })
     with app.app_context():
         _db.create_all()
@@ -47,7 +43,7 @@ def db(app):
 
 
 def _seed_users():
-    """Минимальный набор данных: админ, модератор, клиент, салон."""
+    """Минимальный набор: регион, город, салон, услуга, специалист, 3 пользователя."""
     region = Region(name="Тестовый регион")
     _db.session.add(region)
     _db.session.flush()
@@ -83,27 +79,27 @@ def _seed_users():
     _db.session.commit()
 
 
+def _login(client, login_value, password):
+    """Помощник: авторизация через реальный POST /login."""
+    return client.post("/login", data={
+        "login": login_value,
+        "password": password,
+    }, follow_redirects=False)
+
+
 @pytest.fixture()
 def admin_client(client):
-    """Клиент, вошедший как админ."""
-    with client.session_transaction() as sess:
-        # Flask-Login хранит user_id в сессии
-        sess["_user_id"] = "1"
-        sess["_fresh"] = True
+    _login(client, "admin@test.local", "admin123")
     return client
 
 
 @pytest.fixture()
 def mod_client(client):
-    with client.session_transaction() as sess:
-        sess["_user_id"] = "2"
-        sess["_fresh"] = True
+    _login(client, "mod@test.local", "moder123")
     return client
 
 
 @pytest.fixture()
 def user_client(client):
-    with client.session_transaction() as sess:
-        sess["_user_id"] = "3"
-        sess["_fresh"] = True
+    _login(client, "client@test.local", "client123")
     return client
