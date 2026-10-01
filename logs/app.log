@@ -41,3 +41,1175 @@
 2026-10-01 12:47:35 | INFO  | user=- | ip=- | - - | === Приложение создано ===
 2026-10-01 12:47:48 | INFO  | user=- | ip=- | - - | === Vibe start ===
 2026-10-01 12:47:48 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:17:45 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:17:45 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:17:45 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:18:49 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:18:50 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:18:50 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:18:50 | ERROR | user=- | ip=- | - - | Error: Directory migrations already exists and is not empty
+2026-10-01 13:18:50 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:18:50 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:18:50 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:18:52 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:18:52 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:18:52 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:18:58 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:18:58 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:19:00 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:19:00 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:19:08 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:19:08 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:19:40 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:19:40 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:19:40 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:19:40 | ERROR | user=- | ip=- | - - | Error: Directory migrations already exists and is not empty
+2026-10-01 13:19:48 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:19:48 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:19:48 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:19:53 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:19:53 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 113, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:19:53 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:19:58 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:19:58 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:26:10 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:26:10 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 158, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:26:10 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:26:11 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:26:11 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 158, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:26:11 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:26:11 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:26:12 | ERROR | user=- | ip=- | - - | [SYNC] ошибка: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: salons
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Student\Downloads\barbershop\app\__init__.py", line 149, in create_app
+    sync_all_cover_covers(app)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Student\Downloads\barbershop\app\media_sync.py", line 158, in sync_all_cover_covers
+    for salon in Salon.query.all():
+                 ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2673, in all
+    return self._iter().all()  # type: ignore
+           ~~~~~~~~~~^^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\query.py", line 2827, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+        params,
+        ^^^^^^^
+        execution_options={"_sa_orm_load_options": self.load_options},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2247, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\orm\context.py", line 305, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Student\Downloads\barbershop\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: salons
+[SQL: SELECT salons.id AS salons_id, salons.city_id AS salons_city_id, salons.name AS salons_name, salons.address AS salons_address, salons.phone AS salons_phone, salons.description AS salons_description, salons.photo_url AS salons_photo_url, salons.latitude AS salons_latitude, salons.longitude AS salons_longitude, salons.kind AS salons_kind, salons.is_active AS salons_is_active, salons.created_at AS salons_created_at 
+FROM salons]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-10-01 13:26:12 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:26:12 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:26:12 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:27:01 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:27:01 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:27:02 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:27:02 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:27:02 | WARNING | user=- | ip=- | - - |  * Debugger is active!
+2026-10-01 13:27:28 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:27:28 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:27:29 | INFO  | user=- | ip=- | - - | === Vibe start ===
+2026-10-01 13:27:29 | INFO  | user=- | ip=- | - - | === Приложение создано ===
+2026-10-01 13:27:29 | WARNING | user=- | ip=- | - - |  * Debugger is active!
