@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Ошибка сервера — Vibe{% endblock %}
+{% block content %}
+  <div class="text-center py-5">
+    <h1 class="display-1 fw-bold">500</h1>
+    <p class="text-light-50 mb-4">Что-то пошло не так. Мы уже знаем и чиним.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-brand">На главную</a>
+  </div>
+{% endblock %}

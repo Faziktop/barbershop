@@ -3,7 +3,7 @@
 Реальные каналы: SMTP для email, SMS.ru/Twilio для телефона.
 """
 import os
-import random
+import secrets
 import smtplib
 from email.mime.text import MIMEText
 
@@ -11,14 +11,19 @@ DEMO_MODE = os.environ.get("DELIVERY_DEMO", "1") == "1"
 
 
 def generate_code(length: int = 5) -> str:
-    return "".join(str(random.randint(0, 9)) for _ in range(length))
+    """Криптостойкий код. secrets.randbelow равномерен на диапазоне."""
+    if length <= 0:
+        raise ValueError("length must be positive")
+    upper = 10 ** length
+    n = secrets.randbelow(upper)
+    return str(n).zfill(length)
 
 
 def send_sms(phone: str, text: str) -> bool:
     if DEMO_MODE:
         print(f"\n=== SMS (демо) ===\nКому: {phone}\nТекст: {text}\n==================\n")
         return True
-    # Реальный провайдер — вставить позже
+    # Реальный провайдер подключается здесь
     return False
 
 

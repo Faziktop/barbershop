@@ -76,12 +76,5 @@
     {% endif %}
   {% endif %}
 
-  <script>
-    function selectSlot(btn) {
-      document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('slot-input').value = btn.dataset.value;
-      document.getElementById('submit-btn').disabled = false;
-    }
-  </script>
+  <script src="{{ url_for('static', filename='js/booking.js') }}"></script>
 {% endblock %}

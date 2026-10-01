@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Аудит — Админ-панель{% endblock %}
+{% block content %}
+  <h1 class="fw-bold mb-4">Журнал аудита</h1>
+
+  <form method="get" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="q" class="form-control"
+             value="{{ q }}" placeholder="Поиск по действию или email">
+      <button class="btn btn-brand">Найти</button>
+    </div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Когда</th>
+          <th>Кто</th>
+          <th>Роль</th>
+          <th>IP</th>
+          <th>Действие</th>
+          <th>Объект</th>
+          <th>Детали</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for a in items.items %}
+        <tr>
+          <td class="text-nowrap">{{ a.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+          <td>{{ a.user_email or "—" }}</td>
+          <td>{{ a.role or "—" }}</td>
+          <td>{{ a.ip or "—" }}</td>
+          <td class="fw-semibold">{{ a.action }}</td>
+          <td>
+            {% if a.target_type %}{{ a.target_type }}#{{ a.target_id }}{% else %}—{% endif %}
+          </td>
+          <td class="small text-muted">{{ a.details or "—" }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-muted">Записей нет.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if items.pages > 1 %}
+    <nav>
+      <ul class="pagination">
+        {% for p in items.iter_pages() %}
+          {% if p %}
+            <li class="page-item {{ 'active' if p == items.page else '' }}">
+              <a class="page-link" href="{{ url_for('admin.audit_view', page=p, q=q) }}">{{ p }}</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+  {% endif %}
+
+  <p class="text-muted small mb-0">
+    Показано {{ items.items|length }} из {{ items.total }} записей.
+  </p>
+{% endblock %}

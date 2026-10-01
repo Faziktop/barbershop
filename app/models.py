@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from flask import url_for
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -168,6 +169,10 @@ class Specialist(db.Model):
 
 class Booking(db.Model):
     __tablename__ = "bookings"
+    __table_args__ = (
+        db.UniqueConstraint("specialist_id", "booking_datetime",
+                            name="uq_specialist_datetime"),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
@@ -182,3 +187,19 @@ class Booking(db.Model):
     @property
     def status_label(self):
         return STATUS_LABELS.get(self.status, self.status)
+
+class AuditLog(db.Model):
+    __tablename__ = "audit_log"
+
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    user_email = db.Column(db.String(150))
+    role = db.Column(db.String(20))
+    ip = db.Column(db.String(64))
+    action = db.Column(db.String(200), index=True)
+    target_type = db.Column(db.String(50))
+    target_id = db.Column(db.Integer)
+    details = db.Column(db.String(1000))
+
+    user = db.relationship("User", foreign_keys=[user_id])

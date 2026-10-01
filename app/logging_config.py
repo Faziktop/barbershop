@@ -1,13 +1,7 @@
-"""
-Настройка логирования. Пишем в logs/ с ротацией по 5 МБ, храним 10 файлов.
-
-Форматы:
-  logs/app.log       — все INFO и выше
-  logs/errors.log    — только WARNING и выше (ошибки, исключения)
-  logs/security.log  — события безопасности (логины, баны, CSRF)
-"""
+import sys
 import logging
 import os
+import re
 from logging.handlers import RotatingFileHandler
 
 from flask import request, has_request_context
@@ -17,26 +11,31 @@ from flask_login import current_user
 LOG_FORMAT = "%(asctime)s | %(levelname)-5s | %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+EMAIL_RE = re.compile(r"([^@\s]{1,3})[^@\s]*(@[^\s]+)")
+PHONE_RE = re.compile(r"(\+?\d{1,2})[\d\s\-\(\)]{5,}(\d{2})")
+
+
+def mask_pii(text: str) -> str:
+    if text is None:
+        return ""
+    text = str(text)
+    text = EMAIL_RE.sub(lambda m: f"{m.group(1)}***{m.group(2)}", text)
+    text = PHONE_RE.sub(lambda m: f"{m.group(1)}***{m.group(2)}", text)
+    return text
+
 
 class ContextFilter(logging.Filter):
-    """Добавляет в каждую запись пользователя, IP и запрос, если они есть."""
-
     def filter(self, record):
         if has_request_context():
-            # Пользователь
             try:
                 if current_user.is_authenticated:
-                    record.user = f"{current_user.email} ({current_user.role})"
+                    record.user = mask_pii(f"{current_user.email} ({current_user.role})")
                 else:
                     record.user = "anonymous"
             except Exception:
                 record.user = "anonymous"
-
-            # IP (учитываем X-Forwarded-For за прокси)
             fwd = request.headers.get("X-Forwarded-For", "")
             record.ip = fwd.split(",")[0].strip() if fwd else (request.remote_addr or "?")
-
-            # Метод и путь
             record.method = request.method
             record.path = request.path
         else:
@@ -44,18 +43,17 @@ class ContextFilter(logging.Filter):
             record.ip = "-"
             record.method = "-"
             record.path = "-"
-
         return True
 
 
 class HumanFormatter(logging.Formatter):
-    """Читаемый формат: время | уровень | user | ip | METHOD PATH | сообщение."""
-
     def format(self, record):
-        record.message = record.getMessage()
-        base = f"{self.formatTime(record, DATE_FORMAT)} | {record.levelname:<5} " \
-               f"| user={record.user} | ip={record.ip} " \
-               f"| {record.method} {record.path} | {record.message}"
+        record.message = mask_pii(record.getMessage())
+        base = (
+            f"{self.formatTime(record, DATE_FORMAT)} | {record.levelname:<5} "
+            f"| user={record.user} | ip={record.ip} "
+            f"| {record.method} {record.path} | {record.message}"
+        )
         if record.exc_info:
             base += "\n" + self.formatException(record.exc_info)
         return base
@@ -79,27 +77,34 @@ def configure_logging(app):
     err_handler = _make_handler(os.path.join(log_dir, "errors.log"), logging.WARNING)
     sec_handler = _make_handler(os.path.join(log_dir, "security.log"), logging.INFO)
 
-    # Отдельный логгер для безопасности, чтобы писать только туда события безопасности
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setLevel(logging.INFO)
+    stream_handler.setFormatter(HumanFormatter())
+    stream_handler.addFilter(ContextFilter())
+
     security_logger = logging.getLogger("vibe.security")
     security_logger.setLevel(logging.INFO)
     security_logger.propagate = False
-    if not security_logger.handlers:
-        security_logger.addHandler(sec_handler)
+    for h in list(security_logger.handlers):
+        security_logger.removeHandler(h)
+    security_logger.addHandler(sec_handler)
 
-    # Основной логгер приложения
+    action_logger = logging.getLogger("vibe.action")
+    action_logger.setLevel(logging.INFO)
+    action_logger.propagate = False
+    for h in list(action_logger.handlers):
+        action_logger.removeHandler(h)
+    action_logger.addHandler(app_handler)
+
     root = logging.getLogger()
     root.setLevel(logging.INFO)
-    # Убираем дефолтные обработчики, чтобы не дублировать в консоль
     for h in list(root.handlers):
         root.removeHandler(h)
     root.addHandler(app_handler)
     root.addHandler(err_handler)
+    root.addHandler(stream_handler)
 
-    # Чтобы Werkzeug тоже писал в app.log, но не спамил access-логами
-    werk = logging.getLogger("werkzeug")
-    werk.setLevel(logging.WARNING)
-
-    # Чтобы SQLAlchemy не спамил
+    logging.getLogger("werkzeug").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
     app.logger.info("=== Vibe start ===")
@@ -107,14 +112,10 @@ def configure_logging(app):
 
 
 def log_security(message):
-    """Логировать событие безопасности."""
-    logging.getLogger("vibe.security").info(message)
+    logging.getLogger("vibe.security").info(mask_pii(message))
 
 
 def log_action(action, **kwargs):
-    """Логировать действие пользователя. Пример:
-       log_action('Salon updated', salon_id=8, name='Vibe на Тверской')
-    """
-    parts = [f"{k}={v}" for k, v in kwargs.items()]
+    parts = [f"{k}={mask_pii(v)}" for k, v in kwargs.items()]
     text = action + (" — " + ", ".join(parts) if parts else "")
     logging.getLogger("vibe.action").info(text)

@@ -1,48 +1,18 @@
-import os
-import uuid
-import shutil
-
 from flask import (
     Blueprint, render_template, redirect, url_for, flash, request, abort,
-    current_app,
 )
 from flask_login import login_required
 
 from . import db
 from .models import (
-    Salon, Service, Specialist, Booking, User, Region, SalonPhoto,
+    Salon, Service, Specialist, Booking, User, Region, SalonPhoto, AuditLog,
     ROLE_ADMIN, ROLE_MODERATOR, ROLE_CLIENT,
 )
 from .decorators import roles_required
-from .logging_config import log_action
+from .audit import audit
+from .media import save_salon_photo, delete_salon_photo_file, delete_salon_folder
 
 admin_bp = Blueprint("admin", __name__)
-
-ALLOWED_EXT = {"png", "jpg", "jpeg", "webp", "gif"}
-
-
-def _allowed(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
-
-
-def _save_salon_photo(file, salon_id):
-    if not file or not file.filename:
-        return None
-    if not _allowed(file.filename):
-        return None
-    folder = os.path.join(current_app.config["UPLOAD_FOLDER"], str(salon_id))
-    os.makedirs(folder, exist_ok=True)
-    ext = file.filename.rsplit(".", 1)[1].lower()
-    name = f"{uuid.uuid4().hex}.{ext}"
-    path = os.path.join(folder, name)
-    file.save(path)
-    return f"{salon_id}/{name}"
-
-
-def _delete_salon_folder(salon_id):
-    folder = os.path.join(current_app.config["UPLOAD_FOLDER"], str(salon_id))
-    if os.path.isdir(folder):
-        shutil.rmtree(folder, ignore_errors=True)
 
 
 @admin_bp.before_request
@@ -65,6 +35,26 @@ def dashboard():
         bookings_count=bookings_count, pending_count=pending_count,
         salons=salons,
     )
+
+
+# ---------- Audit ----------
+
+@admin_bp.route("/audit")
+def audit_view():
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", "").strip()
+    query = AuditLog.query
+    if q:
+        query = query.filter(
+            db.or_(
+                AuditLog.action.ilike(f"%{q}%"),
+                AuditLog.user_email.ilike(f"%{q}%"),
+            )
+        )
+    items = query.order_by(AuditLog.created_at.desc()).paginate(
+        page=page, per_page=50, error_out=False
+    )
+    return render_template("admin/audit.html", items=items, q=q)
 
 
 # ---------- Salons ----------
@@ -102,7 +92,7 @@ def salon_new():
 
         files = request.files.getlist("photos")
         for idx, f in enumerate(files):
-            rel = _save_salon_photo(f, salon.id)
+            rel = save_salon_photo(f, salon.id)
             if rel:
                 db.session.add(SalonPhoto(salon_id=salon.id, url=rel, position=idx))
 
@@ -114,7 +104,8 @@ def salon_new():
                 salon.photo_url = first.url
 
         db.session.commit()
-        log_action("SALON CREATED", salon_id=salon.id, name=salon.name)
+        audit("SALON CREATED", target_type="salon", target_id=salon.id,
+              details=f"name={salon.name}")
         flash("Салон добавлен.", "success")
         return redirect(url_for("admin.salons"))
 
@@ -140,7 +131,7 @@ def salon_edit(salon_id):
         files = request.files.getlist("photos")
         start_pos = SalonPhoto.query.filter_by(salon_id=salon.id).count()
         for idx, f in enumerate(files):
-            rel = _save_salon_photo(f, salon.id)
+            rel = save_salon_photo(f, salon.id)
             if rel:
                 db.session.add(SalonPhoto(salon_id=salon.id, url=rel,
                                           position=start_pos + idx))
@@ -153,8 +144,8 @@ def salon_edit(salon_id):
                 salon.photo_url = first.url
 
         db.session.commit()
-        log_action("SALON UPDATED", salon_id=salon.id, name=salon.name,
-                   active=salon.is_active)
+        audit("SALON UPDATED", target_type="salon", target_id=salon.id,
+              details=f"name={salon.name}, active={salon.is_active}")
         flash("Салон обновлён.", "success")
         return redirect(url_for("admin.salon_edit", salon_id=salon.id))
 
@@ -168,10 +159,11 @@ def salon_delete(salon_id):
     for mod in User.query.filter_by(salon_id=salon.id).all():
         mod.salon_id = None
         mod.role = ROLE_CLIENT
-    _delete_salon_folder(salon.id)
+    delete_salon_folder(salon.id)
     db.session.delete(salon)
     db.session.commit()
-    log_action("SALON DELETED", salon_id=salon_id, name=name)
+    audit("SALON DELETED", target_type="salon", target_id=salon_id,
+          details=f"name={name}")
     flash("Салон удалён.", "info")
     return redirect(url_for("admin.salons"))
 
@@ -182,14 +174,7 @@ def salon_photo_delete(salon_id, photo_id):
     photo = SalonPhoto.query.filter_by(id=photo_id, salon_id=salon_id).first_or_404()
 
     removed_url = photo.url
-
-    if not removed_url.startswith(("http://", "https://")):
-        full = os.path.join(current_app.config["UPLOAD_FOLDER"], removed_url)
-        if os.path.isfile(full):
-            try:
-                os.remove(full)
-            except OSError:
-                pass
+    delete_salon_photo_file(removed_url)
 
     db.session.delete(photo)
     db.session.flush()
@@ -202,7 +187,8 @@ def salon_photo_delete(salon_id, photo_id):
         salon.photo_url = next_photo.url if next_photo else None
 
     db.session.commit()
-    log_action("PHOTO DELETED", salon_id=salon_id, photo_id=photo_id, url=removed_url)
+    audit("PHOTO DELETED", target_type="salon_photo", target_id=photo_id,
+          details=f"salon={salon_id}")
     flash("Фото удалено.", "info")
     return redirect(url_for("admin.salon_edit", salon_id=salon_id))
 
@@ -230,7 +216,8 @@ def assign_moderator(user_id):
     user.role = ROLE_MODERATOR
     user.salon_id = salon.id
     db.session.commit()
-    log_action("MODERATOR ASSIGNED", user_id=user.id, salon_id=salon.id)
+    audit("MODERATOR ASSIGNED", target_type="user", target_id=user.id,
+          details=f"salon={salon.id}")
     flash(f"{user.full_name} — модератор «{salon.name}».", "success")
     return redirect(url_for("admin.users"))
 
@@ -243,7 +230,7 @@ def revoke_moderator(user_id):
     user.role = ROLE_CLIENT
     user.salon_id = None
     db.session.commit()
-    log_action("MODERATOR REVOKED", user_id=user.id)
+    audit("MODERATOR REVOKED", target_type="user", target_id=user.id)
     flash("Роль снята.", "info")
     return redirect(url_for("admin.users"))
 
@@ -256,12 +243,13 @@ def toggle_active(user_id):
         return redirect(url_for("admin.users"))
     user.is_active_flag = not user.is_active_flag
     db.session.commit()
-    log_action("USER TOGGLED", user_id=user.id, active=user.is_active_flag)
+    audit("USER TOGGLED", target_type="user", target_id=user.id,
+          details=f"active={user.is_active_flag}")
     flash("Статус обновлён.", "success")
     return redirect(url_for("admin.users"))
 
 
-# ---------- Cross-salon management ----------
+# ---------- Bookings ----------
 
 @admin_bp.route("/salons/<int:salon_id>/bookings")
 def salon_bookings(salon_id):
@@ -278,10 +266,13 @@ def booking_update_status(booking_id):
     if new_status in ("pending", "confirmed", "cancelled", "completed"):
         booking.status = new_status
         db.session.commit()
-        log_action("BOOKING STATUS (admin)", booking_id=booking.id, status=new_status)
+        audit("BOOKING STATUS (admin)", target_type="booking", target_id=booking.id,
+              details=f"status={new_status}")
         flash("Статус записи обновлён.", "success")
     return redirect(request.referrer or url_for("admin.dashboard"))
 
+
+# ---------- Services ----------
 
 @admin_bp.route("/salons/<int:salon_id>/services")
 def salon_services(salon_id):
@@ -304,13 +295,15 @@ def salon_service_new(salon_id):
             db.session.add(Service(salon_id=salon.id, name=name, description=description,
                                    price=price, duration_minutes=duration))
             db.session.commit()
-            log_action("SERVICE CREATED (admin)", salon_id=salon.id, name=name)
+            audit("SERVICE CREATED (admin)", target_type="salon", target_id=salon.id,
+                  details=f"name={name}")
             flash("Услуга добавлена.", "success")
             return redirect(url_for("admin.salon_services", salon_id=salon.id))
     return render_template("admin/service_form.html", salon=salon, service=None)
 
 
-@admin_bp.route("/salons/<int:salon_id>/services/<int:service_id>/edit", methods=["GET", "POST"])
+@admin_bp.route("/salons/<int:salon_id>/services/<int:service_id>/edit",
+                methods=["GET", "POST"])
 def salon_service_edit(salon_id, service_id):
     salon = Salon.query.get_or_404(salon_id)
     service = Service.query.filter_by(id=service_id, salon_id=salon.id).first_or_404()
@@ -321,27 +314,31 @@ def salon_service_edit(salon_id, service_id):
         service.duration_minutes = request.form.get("duration_minutes", type=int) or 30
         service.is_active = bool(request.form.get("is_active"))
         db.session.commit()
-        log_action("SERVICE UPDATED (admin)", salon_id=salon.id, service_id=service.id)
+        audit("SERVICE UPDATED (admin)", target_type="service", target_id=service.id)
         flash("Услуга обновлена.", "success")
         return redirect(url_for("admin.salon_services", salon_id=salon.id))
     return render_template("admin/service_form.html", salon=salon, service=service)
 
 
-@admin_bp.route("/salons/<int:salon_id>/services/<int:service_id>/delete", methods=["POST"])
+@admin_bp.route("/salons/<int:salon_id>/services/<int:service_id>/delete",
+                methods=["POST"])
 def salon_service_delete(salon_id, service_id):
     salon = Salon.query.get_or_404(salon_id)
     service = Service.query.filter_by(id=service_id, salon_id=salon.id).first_or_404()
     db.session.delete(service)
     db.session.commit()
-    log_action("SERVICE DELETED (admin)", salon_id=salon.id, service_id=service_id)
+    audit("SERVICE DELETED (admin)", target_type="service", target_id=service_id)
     flash("Услуга удалена.", "info")
     return redirect(url_for("admin.salon_services", salon_id=salon.id))
 
 
+# ---------- Specialists ----------
+
 @admin_bp.route("/salons/<int:salon_id>/specialists")
 def salon_specialists(salon_id):
     salon = Salon.query.get_or_404(salon_id)
-    items = Specialist.query.filter_by(salon_id=salon.id).order_by(Specialist.full_name).all()
+    items = Specialist.query.filter_by(salon_id=salon.id)\
+                            .order_by(Specialist.full_name).all()
     return render_template("admin/salon_specialists.html", salon=salon, specialists=items)
 
 
@@ -359,13 +356,15 @@ def salon_specialist_new(salon_id):
                                        specialization=specialization,
                                        description=description))
             db.session.commit()
-            log_action("SPECIALIST CREATED (admin)", salon_id=salon.id, name=full_name)
+            audit("SPECIALIST CREATED (admin)", target_type="salon", target_id=salon.id,
+                  details=f"name={full_name}")
             flash("Специалист добавлен.", "success")
             return redirect(url_for("admin.salon_specialists", salon_id=salon.id))
     return render_template("admin/specialist_form.html", salon=salon, specialist=None)
 
 
-@admin_bp.route("/salons/<int:salon_id>/specialists/<int:spec_id>/edit", methods=["GET", "POST"])
+@admin_bp.route("/salons/<int:salon_id>/specialists/<int:spec_id>/edit",
+                methods=["GET", "POST"])
 def salon_specialist_edit(salon_id, spec_id):
     salon = Salon.query.get_or_404(salon_id)
     specialist = Specialist.query.filter_by(id=spec_id, salon_id=salon.id).first_or_404()
@@ -375,18 +374,20 @@ def salon_specialist_edit(salon_id, spec_id):
         specialist.description = request.form.get("description", "").strip()[:2000]
         specialist.is_active = bool(request.form.get("is_active"))
         db.session.commit()
-        log_action("SPECIALIST UPDATED (admin)", salon_id=salon.id, specialist_id=specialist.id)
+        audit("SPECIALIST UPDATED (admin)", target_type="specialist",
+              target_id=specialist.id)
         flash("Специалист обновлён.", "success")
         return redirect(url_for("admin.salon_specialists", salon_id=salon.id))
     return render_template("admin/specialist_form.html", salon=salon, specialist=specialist)
 
 
-@admin_bp.route("/salons/<int:salon_id>/specialists/<int:spec_id>/delete", methods=["POST"])
+@admin_bp.route("/salons/<int:salon_id>/specialists/<int:spec_id>/delete",
+                methods=["POST"])
 def salon_specialist_delete(salon_id, spec_id):
     salon = Salon.query.get_or_404(salon_id)
     specialist = Specialist.query.filter_by(id=spec_id, salon_id=salon.id).first_or_404()
     db.session.delete(specialist)
     db.session.commit()
-    log_action("SPECIALIST DELETED (admin)", salon_id=salon.id, specialist_id=spec_id)
+    audit("SPECIALIST DELETED (admin)", target_type="specialist", target_id=spec_id)
     flash("Специалист удалён.", "info")
     return redirect(url_for("admin.salon_specialists", salon_id=salon.id))

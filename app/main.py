@@ -1,30 +1,31 @@
 import math
-from datetime import datetime, timedelta, date
+from datetime import datetime, date
 
 from flask import (Blueprint, render_template, redirect, url_for, flash,
                    request, abort, jsonify)
 from flask_login import login_required, current_user
+from sqlalchemy import text
 
 from . import db, limiter
 from .models import (Salon, Service, Specialist, Booking, City, Region,
-                     STATUS_PENDING, STATUS_CANCELLED)
-from .logging_config import log_action
+                     STATUS_CANCELLED)
+from .audit import audit
+from .services.bookings import (
+    get_available_slots, create_booking, BookingError,
+)
 
 main_bp = Blueprint("main", __name__)
 
-WORK_START_HOUR = 9
-WORK_END_HOUR = 20
-SLOT_STEP_MINUTES = 30
 
-
-def generate_slots_for_date(day):
-    slots = []
-    current = datetime.combine(day, datetime.min.time()).replace(hour=WORK_START_HOUR)
-    end = datetime.combine(day, datetime.min.time()).replace(hour=WORK_END_HOUR)
-    while current < end:
-        slots.append(current)
-        current += timedelta(minutes=SLOT_STEP_MINUTES)
-    return slots
+@main_bp.route("/health")
+def health():
+    db_ok = True
+    try:
+        db.session.execute(text("SELECT 1"))
+    except Exception:
+        db_ok = False
+    return jsonify({"status": "ok" if db_ok else "degraded", "db": db_ok}), \
+        (200 if db_ok else 503)
 
 
 @main_bp.route("/")
@@ -51,6 +52,7 @@ def index():
 
 
 @main_bp.route("/api/cities")
+@limiter.limit("60 per minute")
 def api_cities():
     q = (request.args.get("q") or "").strip().lower()
     all_cities = City.query.order_by(City.name).all()
@@ -63,6 +65,7 @@ def api_cities():
 
 
 @main_bp.route("/api/find-city")
+@limiter.limit("30 per minute")
 def api_find_city():
     try:
         lat = float(request.args.get("lat"))
@@ -124,59 +127,24 @@ def book(salon_id):
 
     available_slots = []
     if selected_specialist_id:
-        all_slots = generate_slots_for_date(selected_date)
-        taken = {
-            b.booking_datetime
-            for b in Booking.query.filter_by(specialist_id=selected_specialist_id)
-            .filter(Booking.status.in_(["pending", "confirmed"])).all()
-        }
-        now = datetime.now()
-        available_slots = [s for s in all_slots if s not in taken and s > now]
+        available_slots = get_available_slots(selected_specialist_id, selected_date)
 
     if request.method == "POST":
-        service_id = request.form.get("service_id", type=int)
-        specialist_id = request.form.get("specialist_id", type=int)
-        slot_str = request.form.get("slot")
-        note = request.form.get("note", "").strip()[:500]
-
-        service = Service.query.filter_by(id=service_id, salon_id=salon.id).first()
-        specialist = Specialist.query.filter_by(id=specialist_id, salon_id=salon.id).first()
-
-        error = None
-        booking_dt = None
-        if not service or not specialist:
-            error = "Выберите услугу и специалиста."
-        elif not slot_str:
-            error = "Выберите время."
-        else:
-            try:
-                booking_dt = datetime.strptime(slot_str, "%Y-%m-%dT%H:%M")
-            except ValueError:
-                error = "Некорректное время."
-
-        if not error and booking_dt:
-            clash = Booking.query.filter_by(
-                specialist_id=specialist.id, booking_datetime=booking_dt
-            ).filter(Booking.status.in_(["pending", "confirmed"])).first()
-            if clash:
-                error = "Время занято."
-            elif booking_dt < datetime.now():
-                error = "Нельзя на прошедшее время."
-
-        if error:
-            flash(error, "danger")
-        else:
-            new_booking = Booking(
-                user_id=current_user.id, salon_id=salon.id,
-                service_id=service.id, specialist_id=specialist.id,
-                booking_datetime=booking_dt, status=STATUS_PENDING, note=note)
-            db.session.add(new_booking)
-            db.session.commit()
-            log_action("BOOKING CREATED", booking_id=new_booking.id,
-                       user_id=current_user.id, salon_id=salon.id,
-                       service_id=service.id, specialist_id=specialist.id)
+        try:
+            booking = create_booking(
+                user_id=current_user.id,
+                salon_id=salon.id,
+                service_id=request.form.get("service_id", type=int),
+                specialist_id=request.form.get("specialist_id", type=int),
+                slot_str=request.form.get("slot"),
+                note=request.form.get("note", "").strip()[:500],
+            )
+            audit("BOOKING CREATED", target_type="booking", target_id=booking.id,
+                  details=f"salon={salon.id}")
             flash("Заявка отправлена.", "success")
             return redirect(url_for("main.profile"))
+        except BookingError as e:
+            flash(str(e), "danger")
 
     return render_template("booking_form.html", salon=salon, services=services,
                            specialists=specialists,
@@ -210,7 +178,7 @@ def edit_profile():
                 return render_template("edit_profile.html")
             current_user.set_password(new_password)
         db.session.commit()
-        log_action("PROFILE UPDATED", user_id=current_user.id)
+        audit("PROFILE UPDATED", target_type="user", target_id=current_user.id)
         flash("Профиль обновлён.", "success")
         return redirect(url_for("main.profile"))
     return render_template("edit_profile.html")
@@ -226,7 +194,7 @@ def cancel_booking(booking_id):
     if booking.status in ("pending", "confirmed"):
         booking.status = STATUS_CANCELLED
         db.session.commit()
-        log_action("BOOKING CANCELLED", booking_id=booking.id, user_id=current_user.id)
+        audit("BOOKING CANCELLED", target_type="booking", target_id=booking.id)
         flash("Запись отменена.", "info")
     else:
         flash("Эту запись нельзя отменить.", "warning")

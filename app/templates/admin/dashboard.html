@@ -5,28 +5,48 @@
 
   <div class="row g-3 mb-4">
     <div class="col-md-3">
-      <div class="card p-3 text-center"><div class="display-6 fw-bold">{{ salons_count }}</div><div class="text-muted">Парикмахерских</div></div>
+      <div class="card p-3 text-center">
+        <div class="display-6 fw-bold">{{ salons_count }}</div>
+        <div class="text-muted">Парикмахерских</div>
+      </div>
     </div>
     <div class="col-md-3">
-      <div class="card p-3 text-center"><div class="display-6 fw-bold">{{ users_count }}</div><div class="text-muted">Пользователей</div></div>
+      <div class="card p-3 text-center">
+        <div class="display-6 fw-bold">{{ users_count }}</div>
+        <div class="text-muted">Пользователей</div>
+      </div>
     </div>
     <div class="col-md-3">
-      <div class="card p-3 text-center"><div class="display-6 fw-bold">{{ bookings_count }}</div><div class="text-muted">Всего записей</div></div>
+      <div class="card p-3 text-center">
+        <div class="display-6 fw-bold">{{ bookings_count }}</div>
+        <div class="text-muted">Всего записей</div>
+      </div>
     </div>
     <div class="col-md-3">
-      <div class="card p-3 text-center"><div class="display-6 fw-bold">{{ pending_count }}</div><div class="text-muted">Ожидают подтверждения</div></div>
+      <div class="card p-3 text-center">
+        <div class="display-6 fw-bold">{{ pending_count }}</div>
+        <div class="text-muted">Ожидают подтверждения</div>
+      </div>
     </div>
   </div>
 
   <div class="d-flex gap-2 mb-4 flex-wrap">
     <a href="{{ url_for('admin.salons') }}" class="btn btn-brand">Управление парикмахерскими</a>
     <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">Пользователи и модераторы</a>
+    <a href="{{ url_for('admin.audit_view') }}" class="btn btn-outline-secondary">Журнал аудита</a>
   </div>
 
   <h5 class="fw-bold mb-3">Парикмахерские сети</h5>
   <div class="table-responsive">
-    <table class="table bg-white align-middle">
-      <thead><tr><th>Название</th><th>Адрес</th><th>Модераторы</th><th></th></tr></thead>
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Адрес</th>
+          <th>Модераторы</th>
+          <th></th>
+        </tr>
+      </thead>
       <tbody>
       {% for s in salons %}
         <tr>

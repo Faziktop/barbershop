@@ -7,7 +7,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from . import db, limiter
 from .models import User, ROLE_CLIENT
 from .sms import generate_code, send_sms, send_email
-from .logging_config import log_action, log_security
+from .logging_config import log_security
+from .audit import audit
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -57,14 +58,12 @@ def register():
             error = "Пароли не совпадают."
         elif len(password) < 6:
             error = "Пароль минимум 6 символов."
-        elif User.query.filter_by(email=email).first():
-            error = "Пользователь с таким e-mail уже зарегистрирован."
-        elif User.query.filter_by(phone=phone).first():
-            error = "Пользователь с таким телефоном уже зарегистрирован."
+        elif User.query.filter_by(email=email).first() or User.query.filter_by(phone=phone).first():
+            error = "Пользователь с такими данными уже зарегистрирован. Войдите или восстановите пароль."
 
         if error:
             flash(error, "danger")
-            log_security(f"REGISTER FAILED email={email} reason={error}")
+            log_security("REGISTER FAILED")
             return render_template("register.html", full_name=full_name,
                                    email=email, phone=phone)
 
@@ -78,8 +77,7 @@ def register():
 
         send_sms(phone, f"Vibe: код подтверждения {user.phone_code}")
 
-        log_action("USER REGISTERED", user_id=user.id, email=user.email, phone=user.phone)
-
+        audit("USER REGISTERED", target_type="user", target_id=user.id)
         session["pending_user_id"] = user.id
         flash("Мы отправили код на телефон. В демо-режиме смотрите консоль.", "info")
         return redirect(url_for("auth.verify_phone"))
@@ -105,7 +103,7 @@ def login():
 
         if not user.is_active_flag:
             flash("Учётная запись заблокирована.", "danger")
-            log_security(f"LOGIN BLOCKED USER login={login_value}")
+            log_security(f"LOGIN BLOCKED USER user_id={user.id}")
             return render_template("login.html", login=login_value)
 
         if not user.phone_verified:
@@ -119,7 +117,7 @@ def login():
             return redirect(url_for("auth.verify_phone"))
 
         login_user(user)
-        log_action("USER LOGIN", user_id=user.id, email=user.email, role=user.role)
+        audit("USER LOGIN", target_type="user", target_id=user.id)
         flash(f"Здравствуйте, {user.full_name}!", "success")
         return _redirect_by_role(user)
 
@@ -161,7 +159,7 @@ def verify_phone():
             db.session.commit()
             session.pop("pending_user_id", None)
             login_user(user)
-            log_action("PHONE VERIFIED", user_id=user.id)
+            audit("PHONE VERIFIED SUCCESS", target_type="user", target_id=user.id)
             flash("Номер подтверждён.", "success")
             return _redirect_by_role(user)
         return redirect(url_for("auth.verify_phone"))
@@ -183,7 +181,7 @@ def send_code_again():
     user.phone_code_expires = datetime.utcnow() + timedelta(minutes=10)
     db.session.commit()
     send_sms(user.phone, f"Vibe: код подтверждения {user.phone_code}")
-    log_action("PHONE CODE RESENT", user_id=user.id)
+    audit("PHONE CODE RESENT", target_type="user", target_id=user.id)
     flash("Код отправлен повторно.", "info")
     return redirect(url_for("auth.verify_phone"))
 
@@ -216,7 +214,7 @@ def forgot():
                     send_sms(user.phone, f"Vibe: код восстановления {code}")
 
             session["reset_user_id"] = user.id
-            log_security(f"PASSWORD RESET REQUESTED login={login_value} channel={channel}")
+            log_security(f"PASSWORD RESET REQUESTED user_id={user.id} channel={channel}")
 
         flash("Если такой пользователь есть, код отправлен. "
               "В демо-режиме смотрите консоль сервера.", "info")
@@ -265,7 +263,7 @@ def reset_password():
             user.reset_channel = None
             db.session.commit()
             session.pop("reset_user_id", None)
-            log_action("PASSWORD RESET SUCCESS", user_id=user.id, email=user.email)
+            audit("PASSWORD RESET SUCCESS", target_type="user", target_id=user.id)
             flash("Пароль изменён. Войдите с новым паролем.", "success")
             return redirect(url_for("auth.login"))
 
@@ -278,7 +276,7 @@ def reset_password():
 @auth_bp.route("/logout")
 @login_required
 def logout():
-    log_action("USER LOGOUT", user_id=current_user.id, email=current_user.email)
+    audit("USER LOGOUT", target_type="user", target_id=current_user.id)
     logout_user()
     flash("Вы вышли.", "info")
     return redirect(url_for("main.index"))
